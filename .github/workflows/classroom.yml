@@ -1,0 +1,70 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: multiply 2
+      id: multiply-2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: multiply 2
+        setup-command: gcc -o multiplyTable multiplyTable.c
+        command: "./multiplyTable"
+        input: '2'
+        expected-output: |-
+          2 x 1 = 2
+          2 x 2 = 4
+          2 x 3 = 6
+          2 x 4 = 8
+          2 x 5 = 10
+          2 x 6 = 12
+          2 x 7 = 14
+          2 x 8 = 16
+          2 x 9 = 18
+          2 x 10 = 20
+          2 x 11 = 22
+          2 x 12 = 24
+        comparison-method: contains
+        timeout: 10
+        max-score: 5
+    - name: multiply 3
+      id: multiply-3
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: multiply 3
+        setup-command: gcc -o multiplyTable multiplyTable.c
+        command: "./multiplyTable"
+        input: '3'
+        expected-output: |-
+          3 x 1 = 3
+          3 x 2 = 6
+          3 x 3 = 9
+          3 x 4 = 12
+          3 x 5 = 15
+          3 x 6 = 18
+          3 x 7 = 21
+          3 x 8 = 24
+          3 x 9 = 27
+          3 x 10 = 30
+          3 x 11 = 33
+          3 x 12 = 36
+        comparison-method: contains
+        timeout: 10
+        max-score: 5
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        MULTIPLY-2_RESULTS: "${{steps.multiply-2.outputs.result}}"
+        MULTIPLY-3_RESULTS: "${{steps.multiply-3.outputs.result}}"
+      with:
+        runners: multiply-2,multiply-3
